@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>774</width>
+    <width>762</width>
     <height>598</height>
    </rect>
   </property>
@@ -34,7 +34,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>0</y>
+      <y>6</y>
       <width>731</width>
       <height>20</height>
      </rect>
@@ -70,7 +70,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QListWidget" name="listWidget">
+   <widget class="QListWidget" name="lw_feed_list">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -80,7 +80,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QListView" name="listView">
+   <widget class="QListView" name="lw_episode_list">
     <property name="geometry">
      <rect>
       <x>250</x>
@@ -139,7 +139,7 @@
      <enum>Qt::Vertical</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="btn_mute">
     <property name="geometry">
      <rect>
       <x>710</x>
@@ -153,7 +153,7 @@
     </property>
     <property name="icon">
      <iconset>
-      <normalon>imgbin-computer-icons-sound-icon-volume-others-Sa8AsccNVpT1Eu5vvYp8nLvKD.jpg</normalon>
+      <normalon>mute_icon.png</normalon>
      </iconset>
     </property>
     <property name="iconSize">
@@ -168,8 +168,8 @@
      <rect>
       <x>10</x>
       <y>460</y>
-      <width>41</width>
-      <height>34</height>
+      <width>31</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
@@ -186,7 +186,7 @@
      <rect>
       <x>640</x>
       <y>70</y>
-      <width>88</width>
+      <width>111</width>
       <height>34</height>
      </rect>
     </property>
@@ -199,7 +199,7 @@
      <rect>
       <x>640</x>
       <y>110</y>
-      <width>88</width>
+      <width>111</width>
       <height>34</height>
      </rect>
     </property>
@@ -212,7 +212,7 @@
      <rect>
       <x>640</x>
       <y>150</y>
-      <width>88</width>
+      <width>111</width>
       <height>34</height>
      </rect>
     </property>
@@ -223,9 +223,9 @@
    <widget class="QPushButton" name="btn_forward">
     <property name="geometry">
      <rect>
-      <x>690</x>
+      <x>700</x>
       <y>190</y>
-      <width>41</width>
+      <width>51</width>
       <height>34</height>
      </rect>
     </property>
@@ -238,7 +238,7 @@
      <rect>
       <x>640</x>
       <y>190</y>
-      <width>41</width>
+      <width>51</width>
       <height>34</height>
      </rect>
     </property>
@@ -265,8 +265,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>774</width>
-     <height>35</height>
+     <width>762</width>
+     <height>24</height>
     </rect>
    </property>
   </widget>
