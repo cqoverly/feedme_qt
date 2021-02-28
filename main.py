@@ -8,6 +8,8 @@ from PySide2 import QtUiTools as qtu
 from PySide2 import QtMultimedia as qtm
 from PySide2 import Qt
 
+import database as db
+
 
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
@@ -70,15 +72,26 @@ class MainWindow(qtw.QMainWindow):
         self.lbl_time = self.window.findChild(qtw.QLabel, "lbl_time")
 
         # ListWidgets
-        self.lw_episode_list = self.window.findChild(qtw.QListWidget, "")
         self.lw_episode_list = self.window.findChild(qtw.QListWidget, "lw_episode_list")
+        self.lw_feed_list = self.window.findChild(qtw.QListWidget, "lw_feed_list")
+
+        # Load data into interface
+        self.load_feed_list()
 
         self.grabKeyboard()
         self.window.show()
 
 
     def load_feed_list(self):
-        print("Load feed list")
+        logger.info("Loading feed list")
+        podcasts = sorted(db.get_podcasts())
+        try:
+            self.lw_feed_list.clear()
+            self.lw_feed_list.addItems(podcasts)
+            logger.info("Podcast list loaded successfully.")
+        except Exception as e:
+            logger.error(f"Failed to load podcast list:\n{e}")
+
 
     def load_episode_list(self):
         print("Load episode list")
