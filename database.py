@@ -139,7 +139,7 @@ def get_episodes(podcast_title):
     cur = conn.cursor()
     cur.execute(epidodes_sql, (podcast_title,))
     episodes_data: str = cur.fetchone()[0]
-    episodes_info: list = json.loads(episodes_data)
+    episodes_info: dict = json.loads(episodes_data)
     return episodes_info
 
 
