@@ -5,6 +5,7 @@ from PySide2 import QtWidgets as qtw
 from PySide2 import QtGui as qtg
 from PySide2 import QtCore as qtc
 from PySide2 import QtUiTools as qtu
+from PySide2 import QtMultimedia as qtm
 from PySide2 import Qt
 
 
@@ -12,6 +13,8 @@ logger = logging.getLogger("app_logger")
 logging.basicConfig(
     level=logging.DEBUG, format="%(process)d - %(levelname)s - %(message)s"
 )
+
+feed = "https://aphid.fireside.fm/d/1437767933/b44de5fa-47c1-4e94-bf9e-c72f8d1c8f5d/ed0eb2af-b692-4d00-996e-2eba610b17de.mp3"
 
 
 class MainWindow(qtw.QMainWindow):
@@ -25,15 +28,24 @@ class MainWindow(qtw.QMainWindow):
         ui_file.close()
         logger.info("Inteface loaded")
 
+        # create audio player
+        self.player = qtm.QMediaPlayer()
+        self.feed = qtc.QUrl(
+            "https://aphid.fireside.fm/d/1437767933/b44de5fa-47c1-4e94-bf9e-c72f8d1c8f5d/ed0eb2af-b692-4d00-996e-2eba610b17de.mp3"
+        )
+
+        #### TEMP ####
+        self.content = qtm.QMediaContent(self.feed)
+        self.player.setMedia(self.content)
+
         # set keyboard commands
         self.key_commands = {
-                qtc.Qt.Key_Space: self.pause,
-                qtc.Qt.Key_S: self.stop,
-                qtc.Qt.Key_Left: self.skip_back,
-                qtc.Qt.Key_Right: self.skip_forward,
-                qtc.Qt.Key_VolumeMute: self.toggle_mute
+            qtc.Qt.Key_Space: self.pause,
+            qtc.Qt.Key_S: self.stop,
+            qtc.Qt.Key_Left: self.skip_back,
+            qtc.Qt.Key_Right: self.skip_forward,
+            qtc.Qt.Key_VolumeMute: self.toggle_mute,
         }
-
 
         # LOAD Interface Items
 
@@ -66,12 +78,18 @@ class MainWindow(qtw.QMainWindow):
         print("Adding feed")
 
     def play(self):
-        print("Playing")
+
+        self.player.play()
 
     def pause(self):
-        print("Paused")
+        if self.player.state() == qtm.QMediaPlayer.State.PlayingState:
+            self.player.pause()
+        else:
+            self.player.play()
+
     def stop(self):
-        print("Stopped")
+        if self.player.state() == qtm.QMediaPlayer.State.PlayingState:
+            self.player.stop()
 
     def skip_forward(self):
         print("Skipping forward")
