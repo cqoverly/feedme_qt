@@ -76,6 +76,13 @@ class MainWindow(qtw.QMainWindow):
         self.grabKeyboard()
         self.window.show()
 
+
+    def load_feed_list(self):
+        print("Load feed list")
+
+    def load_episode_list(self):
+        print("Load episode list")
+
     def add_feed(self):
         print("Adding feed")
 
