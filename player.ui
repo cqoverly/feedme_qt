@@ -80,7 +80,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QListView" name="lw_episode_list">
+   <widget class="QListWidget" name="lw_episode_list">
     <property name="geometry">
      <rect>
       <x>250</x>
@@ -266,7 +266,7 @@
      <x>0</x>
      <y>0</y>
      <width>762</width>
-     <height>24</height>
+     <height>30</height>
     </rect>
    </property>
   </widget>
