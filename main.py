@@ -113,10 +113,13 @@ class MainWindow(qtw.QMainWindow):
             print(key)
 
     def update_time(self):
+        duration = self.player.duration()/1000
+        d_min = str(round(duration//60)).zfill(2)
+        d_sec = str(round(duration%60)).zfill(2)
         current_time = self.player.position()/1000
-        minutes = str(round(current_time//60)).zfill(2)
-        seconds = str(round(current_time%60)).zfill(2)
-        self.lbl_time.setText(f'Current time: {minutes}:{seconds}')
+        curr_min = str(round(current_time//60)).zfill(2)
+        curr_sec = str(round(current_time%60)).zfill(2)
+        self.lbl_time.setText(f'Current time: {curr_min}:{curr_sec} / {d_min}:{d_sec}')
 
 
 if __name__ == "__main__":
