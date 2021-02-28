@@ -74,6 +74,8 @@ class MainWindow(qtw.QMainWindow):
         # ListWidgets
         self.lw_episode_list = self.window.findChild(qtw.QListWidget, "lw_episode_list")
         self.lw_feed_list = self.window.findChild(qtw.QListWidget, "lw_feed_list")
+        self.lw_feed_list.itemSelectionChanged.connect(self.load_episode_list)
+        self.lw_episode_list.itemSelectionChanged.connect(self.load_media)
 
         # Load data into interface
         self.load_feed_list()
@@ -94,7 +96,23 @@ class MainWindow(qtw.QMainWindow):
 
 
     def load_episode_list(self):
-        print("Load episode list")
+        feed = self.lw_feed_list.selectedItems()[0].text()
+        episodes = db.get_episodes(feed)
+        ep_dates = episodes.keys()
+        self.lw_episode_list.clear()
+        self.lw_episode_list.addItems(ep_dates)
+
+    def load_media(self):
+        feed = self.lw_feed_list.selectedItems()[0].text()
+        episodes:dict = db.get_episodes(feed)
+        print(episodes)
+        episode:str = self.lw_episode_list.selectedItems()[0].text().strip()
+        print(episode)
+        url:str = episodes[episode]["url"]
+        media_url = qtc.QUrl(url)
+        self.player.setMedia(media_url)
+
+
 
     def add_feed(self):
         print("Adding feed")
