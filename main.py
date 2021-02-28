@@ -14,9 +14,9 @@ logging.basicConfig(
 )
 
 
-class MainInterface(qtw.QMainWindow):
+class MainWindow(qtw.QMainWindow):
     def __init__(self, ui_file, parent=None):
-        super(MainInterface, self).__init__(parent)
+        super(MainWindow, self).__init__(parent)
         ui_file = qtc.QFile(ui_file)
         ui_file.open(qtc.QFile.ReadOnly)
 
@@ -24,6 +24,15 @@ class MainInterface(qtw.QMainWindow):
         self.window = loader.load(ui_file)
         ui_file.close()
         logger.info("Inteface loaded")
+
+        # set keyboard commands
+        self.key_commands = {
+                qtc.Qt.Key_Space: self.pause,
+                qtc.Qt.Key_S: self.stop,
+                qtc.Qt.Key_Left: self.skip_back,
+                qtc.Qt.Key_Right: self.skip_forward,
+                qtc.Qt.Key_VolumeMute: self.toggle_mute
+        }
 
 
         # LOAD Interface Items
@@ -50,6 +59,7 @@ class MainInterface(qtw.QMainWindow):
         self.lw_episode_list = self.window.findChild(qtw.QListWidget, "")
         self.lw_episode_list = self.window.findChild(qtw.QListWidget, "lw_episode_list")
 
+        self.grabKeyboard()
         self.window.show()
 
     def add_feed(self):
@@ -60,7 +70,6 @@ class MainInterface(qtw.QMainWindow):
 
     def pause(self):
         print("Paused")
-
     def stop(self):
         print("Stopped")
 
@@ -73,6 +82,15 @@ class MainInterface(qtw.QMainWindow):
     def toggle_mute(self):
         print("Toggling mute")
 
+    def keyPressEvent(self, event):
+        key = event.key()
+        commands = self.key_commands.keys()
+        if key == qtc.Qt.Key_Q:
+            sys.exit()
+        elif key in commands:
+            self.key_commands[event.key()]()
+        else:
+            print(key)
 
 
 if __name__ == "__main__":
@@ -80,5 +98,5 @@ if __name__ == "__main__":
 
     qtc.QCoreApplication.setAttribute(qtc.Qt.AA_ShareOpenGLContexts)
     app = qtw.QApplication(sys.argv)
-    MainWindow = MainInterface("player.ui")
+    MainWindow = MainWindow("player.ui")
     sys.exit(app.exec_())
