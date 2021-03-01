@@ -126,7 +126,7 @@
      <string>Available Episodes</string>
     </property>
    </widget>
-   <widget class="QSlider" name="verticalSlider">
+   <widget class="QSlider" name="sldr_volume">
     <property name="geometry">
      <rect>
       <x>720</x>
@@ -266,7 +266,7 @@
      <x>0</x>
      <y>0</y>
      <width>762</width>
-     <height>30</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
