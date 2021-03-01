@@ -87,8 +87,12 @@ class MainWindow(qtw.QMainWindow):
         # Load data into interface
         self.load_feed_list()
 
+        # update_feeds needs to be put in it's own thread, or process.
+        db.update_feeds()
+
         self.grabKeyboard()
         self.window.show()
+
 
     def load_feed_list(self):
         logger.info("Loading feed list")
