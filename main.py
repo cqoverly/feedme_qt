@@ -1,12 +1,16 @@
 import logging
 import os
 
+
+import feedparser
+
 from PySide2 import QtWidgets as qtw
 from PySide2 import QtGui as qtg
 from PySide2 import QtCore as qtc
 from PySide2 import QtUiTools as qtu
 from PySide2 import QtMultimedia as qtm
 from PySide2 import Qt
+
 
 import database as db
 
@@ -36,7 +40,6 @@ class MainWindow(qtw.QMainWindow):
         self.player.positionChanged.connect(self.update_time)
         self.player.setVolume(50)
 
-
         # set keyboard commands
         self.key_commands = {
             qtc.Qt.Key_Space: self.pause,
@@ -50,7 +53,7 @@ class MainWindow(qtw.QMainWindow):
 
         # Load Buttons and create connections
         self.btn_add_feed = self.window.findChild(qtw.QPushButton, "btn_add_feed")
-        self.btn_add_feed.clicked.connect(self.add_feed)
+        self.btn_add_feed.clicked.connect(self.get_new_feed)
         self.btn_play = self.window.findChild(qtw.QPushButton, "btn_play")
         self.btn_play.clicked.connect(self.play)
         self.btn_stop = self.window.findChild(qtw.QPushButton, "btn_stop")
@@ -85,7 +88,6 @@ class MainWindow(qtw.QMainWindow):
         self.grabKeyboard()
         self.window.show()
 
-
     def load_feed_list(self):
         logger.info("Loading feed list")
         podcasts = sorted(db.get_podcasts())
@@ -96,7 +98,6 @@ class MainWindow(qtw.QMainWindow):
         except Exception as e:
             logger.error(f"Failed to load podcast list:\n{e}")
 
-
     def load_episode_list(self):
         feed = self.lw_feed_list.selectedItems()[0].text()
         episodes = db.get_episodes(feed)
@@ -106,9 +107,9 @@ class MainWindow(qtw.QMainWindow):
 
     def load_media(self):
         feed = self.lw_feed_list.selectedItems()[0].text()
-        episodes:dict = db.get_episodes(feed)
-        episode:str = self.lw_episode_list.selectedItems()[0].text().strip()
-        url:str = episodes[episode]["url"]
+        episodes: dict = db.get_episodes(feed)
+        episode: str = self.lw_episode_list.selectedItems()[0].text().strip()
+        url: str = episodes[episode]["url"]
         media_url = qtc.QUrl(url)
         self.player.setMedia(media_url)
 
@@ -116,19 +117,25 @@ class MainWindow(qtw.QMainWindow):
         value = self.sldr_volume.value()
         self.player.setVolume(value)
 
-    def add_feed(self):
+    def get_new_feed(self):
 
         add_dialog = qtw.QInputDialog()
         self.releaseKeyboard()
         feed_url, ok = add_dialog.getText(
-                                        self,
-                                        "Enter Feed URL",
-                                        "Feed URl:",
-                                        qtw.QLineEdit.Normal,
-                                        "Happy"
-                                        )
+            self, "Enter Feed URL", "Feed URl:", qtw.QLineEdit.Normal, ""
+        )
 
-        print(feed_url)
+        try:
+            urls = db.get_podcast_urls()
+            valid_feed = test_feed(feed_url)
+            if not valid_feed or feed_url in urls:
+                logger.error(f"{feed_url} is ain invalid feed.")
+            else:  # if no feeds are in database
+                logger.info(f"{feed_url} is a valid feed.")
+                db.parse_xmls_to_database(feed_url)
+            self.load_feed_list()
+        except Exception as e:
+            logger.error(f"Invalid feed entered:\n{e}")
         self.grabKeyboard()
 
     def play(self):
@@ -169,13 +176,22 @@ class MainWindow(qtw.QMainWindow):
             print(key)
 
     def update_time(self):
-        duration = self.player.duration()/1000
-        d_min = str(round(duration//60)).zfill(2)
-        d_sec = str(round(duration%60)).zfill(2)
-        current_time = self.player.position()/1000
-        curr_min = str(round(current_time//60)).zfill(2)
-        curr_sec = str(round(current_time%60)).zfill(2)
-        self.lbl_time.setText(f'Current time: {curr_min}:{curr_sec} / {d_min}:{d_sec}')
+        duration = self.player.duration() / 1000
+        d_min = str(round(duration // 60)).zfill(2)
+        d_sec = str(round(duration % 60)).zfill(2)
+        current_time = self.player.position() / 1000
+        curr_min = str(round(current_time // 60)).zfill(2)
+        curr_sec = str(round(current_time % 60)).zfill(2)
+        self.lbl_time.setText(f"Current time: {curr_min}:{curr_sec} / {d_min}:{d_sec}")
+
+
+def test_feed(url):
+    test_feed = feedparser.parse(url)
+    episodes = test_feed.entries
+    if not episodes:
+        return False
+    else:
+        return True
 
 
 if __name__ == "__main__":
