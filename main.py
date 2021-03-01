@@ -34,13 +34,8 @@ class MainWindow(qtw.QMainWindow):
         self.player = qtm.QMediaPlayer()
         self.player.setNotifyInterval(1000)
         self.player.positionChanged.connect(self.update_time)
-        self.feed = qtc.QUrl(
-            "https://aphid.fireside.fm/d/1437767933/b44de5fa-47c1-4e94-bf9e-c72f8d1c8f5d/ed0eb2af-b692-4d00-996e-2eba610b17de.mp3"
-        )
+        self.player.setVolume(50)
 
-        #### TEMP ####
-        self.content = qtm.QMediaContent(self.feed)
-        self.player.setMedia(self.content)
 
         # set keyboard commands
         self.key_commands = {
@@ -77,6 +72,13 @@ class MainWindow(qtw.QMainWindow):
         self.lw_feed_list.itemSelectionChanged.connect(self.load_episode_list)
         self.lw_episode_list.itemSelectionChanged.connect(self.load_media)
 
+        # Misc interface items
+        self.sldr_volume = self.window.findChild(qtw.QSlider, "sldr_volume")
+        self.sldr_volume.setMinimum(-1)
+        self.sldr_volume.setMaximum(100)
+        self.sldr_volume.setValue(50)
+        self.sldr_volume.sliderMoved.connect(self.change_volume)
+
         # Load data into interface
         self.load_feed_list()
 
@@ -105,14 +107,14 @@ class MainWindow(qtw.QMainWindow):
     def load_media(self):
         feed = self.lw_feed_list.selectedItems()[0].text()
         episodes:dict = db.get_episodes(feed)
-        print(episodes)
         episode:str = self.lw_episode_list.selectedItems()[0].text().strip()
-        print(episode)
         url:str = episodes[episode]["url"]
         media_url = qtc.QUrl(url)
         self.player.setMedia(media_url)
 
-
+    def change_volume(self):
+        value = self.sldr_volume.value()
+        self.player.setVolume(value)
 
     def add_feed(self):
         print("Adding feed")
@@ -138,6 +140,10 @@ class MainWindow(qtw.QMainWindow):
         self.player.setPosition(self.player.position() - 15000)
 
     def toggle_mute(self):
+        if self.player.isMuted():
+            self.player.setMuted(False)
+        else:
+            self.player.setMuted(True)
         print("Toggling mute")
 
     def keyPressEvent(self, event):
