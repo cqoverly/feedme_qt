@@ -16,6 +16,18 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>762</width>
+    <height>598</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>762</width>
+    <height>598</height>
+   </size>
+  </property>
   <property name="font">
    <font>
     <pointsize>12</pointsize>
