@@ -53,7 +53,9 @@ class MainWindow(qtw.QMainWindow):
 
         # Load Buttons and create connections
         self.btn_add_feed = self.window.findChild(qtw.QPushButton, "btn_add_feed")
-        self.btn_add_feed.clicked.connect(self.get_new_feed)
+        self.btn_add_feed.clicked.connect(self.add_new_feed)
+        self.btn_delete_feed = self.window.findChild(qtw.QPushButton, 'btn_delete_feed')
+        self.btn_delete_feed.clicked.connect(self.delete_feed)
         self.btn_play = self.window.findChild(qtw.QPushButton, "btn_play")
         self.btn_play.clicked.connect(self.play)
         self.btn_stop = self.window.findChild(qtw.QPushButton, "btn_stop")
@@ -117,7 +119,7 @@ class MainWindow(qtw.QMainWindow):
         value = self.sldr_volume.value()
         self.player.setVolume(value)
 
-    def get_new_feed(self):
+    def add_new_feed(self):
 
         add_dialog = qtw.QInputDialog()
         self.releaseKeyboard()
@@ -137,6 +139,9 @@ class MainWindow(qtw.QMainWindow):
         except Exception as e:
             logger.error(f"Invalid feed entered:\n{e}")
         self.grabKeyboard()
+
+    def delete_feed(self):
+        print("Delete feed")
 
     def play(self):
 

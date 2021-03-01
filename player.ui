@@ -259,6 +259,25 @@
      <string>Time Remaining:</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btn_delete_feed">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>460</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+      <kerning>true</kerning>
+     </font>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -266,12 +285,25 @@
      <x>0</x>
      <y>0</y>
      <width>762</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>lw_feed_list</tabstop>
+  <tabstop>lw_episode_list</tabstop>
+  <tabstop>btn_play</tabstop>
+  <tabstop>btn_pause</tabstop>
+  <tabstop>btn_stop</tabstop>
+  <tabstop>btn_back</tabstop>
+  <tabstop>btn_forward</tabstop>
+  <tabstop>btn_mute</tabstop>
+  <tabstop>sldr_volume</tabstop>
+  <tabstop>btn_delete_feed</tabstop>
+  <tabstop>btn_add_feed</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
