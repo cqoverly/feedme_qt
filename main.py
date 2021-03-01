@@ -117,7 +117,19 @@ class MainWindow(qtw.QMainWindow):
         self.player.setVolume(value)
 
     def add_feed(self):
-        print("Adding feed")
+
+        add_dialog = qtw.QInputDialog()
+        self.releaseKeyboard()
+        feed_url, ok = add_dialog.getText(
+                                        self,
+                                        "Enter Feed URL",
+                                        "Feed URl:",
+                                        qtw.QLineEdit.Normal,
+                                        "Happy"
+                                        )
+
+        print(feed_url)
+        self.grabKeyboard()
 
     def play(self):
 
