@@ -76,6 +76,7 @@ class MainWindow(qtw.QMainWindow):
         self.lw_feed_list = self.window.findChild(qtw.QListWidget, "lw_feed_list")
         self.lw_feed_list.itemSelectionChanged.connect(self.load_episode_list)
         self.lw_episode_list.itemSelectionChanged.connect(self.load_media)
+        self.lw_episode_list.itemDoubleClicked.connect(self.play)
 
         # Misc interface items
         self.sldr_volume = self.window.findChild(qtw.QSlider, "sldr_volume")
@@ -148,6 +149,8 @@ class MainWindow(qtw.QMainWindow):
         print("Delete feed")
 
     def play(self):
+
+        self.load_media()
 
         self.player.play()
 
