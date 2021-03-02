@@ -23,6 +23,14 @@ logging.basicConfig(
 feed = "https://aphid.fireside.fm/d/1437767933/b44de5fa-47c1-4e94-bf9e-c72f8d1c8f5d/ed0eb2af-b692-4d00-996e-2eba610b17de.mp3"
 
 
+class UpdateWorker(qtc.QObject):
+    finished = qtc.Signal()
+
+    def run(self):
+        db.update_feeds()
+        self.finished.emit()
+
+
 class MainWindow(qtw.QMainWindow):
     def __init__(self, ui_file, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -89,10 +97,10 @@ class MainWindow(qtw.QMainWindow):
         self.load_feed_list()
 
         # update_feeds needs to be put in it's own thread, or process.
-        db.update_feeds()
 
         self.grabKeyboard()
         self.window.show()
+        self.update_feeds()
 
 
     def load_feed_list(self):
@@ -195,6 +203,18 @@ class MainWindow(qtw.QMainWindow):
         curr_min = str(round(current_time // 60)).zfill(2)
         curr_sec = str(round(current_time % 60)).zfill(2)
         self.lbl_time.setText(f"Current time: {curr_min}:{curr_sec} / {d_min}:{d_sec}")
+
+    def update_feeds(self):
+        self.update_thread = qtc.QThread()
+        self.update_worker = UpdateWorker()
+        self.update_worker.moveToThread(self.update_thread)
+        self.update_thread.started.connect(self.update_worker.run)
+        self.update_worker.finished.connect(self.update_thread.quit)
+        self.update_worker.finished.connect(self.update_worker.deleteLater)
+        self.update_thread.finished.connect(self.update_thread.deleteLater)
+
+        self.update_thread.start()
+
 
 
 def test_feed(url):
