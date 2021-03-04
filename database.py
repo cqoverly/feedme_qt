@@ -24,10 +24,33 @@ build_tbl_played_episodes = """
         )
     """
 
+add_new_play_history_query = """
+        INSERT INTO tbl_episodes_played
+        VALUES (?, ?, ?, ?, 0)
+    """
+
+update_play_history_query = """
+        UPDATE tbl_episodes_played
+        SET last_time = ?
+        WHERE episode_url = ?
+    """
+
+get_play_history_query = """
+        SELECT *
+        FROM tbl_episodes_played
+        WHERE episode_url = ?
+    """
+
 get_feed_urls_query = """
         SELECT url
         FROM tbl_podcast
     """
+
+
+
+
+
+
 
 all_feed_xmls = []
 feeds_in_db = []
