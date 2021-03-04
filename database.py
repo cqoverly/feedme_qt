@@ -15,18 +15,15 @@ build_tbl_podcast_query = """
     """
 
 build_tbl_played_episodes = """
-        CREATE TABLE IF NOT EXISTS tbl_epidsodes_played (
+        CREATE TABLE IF NOT EXISTS tbl_episodes_played (
             episode_url TEXT PRIMARY KEY,
-            episode_title TEXT NOT NULL,
-            episode_date TEXT,
-            podcast TEXT NOT NULL,
             last_time INTEGER NOT NULL
         )
     """
 
 add_new_play_history_query = """
         INSERT INTO tbl_episodes_played
-        VALUES (?, ?, ?, ?, 0)
+        VALUES (?, ?)
     """
 
 update_play_history_query = """
@@ -35,7 +32,7 @@ update_play_history_query = """
         WHERE episode_url = ?
     """
 
-get_play_history_query = """
+get_episode_history_query = """
         SELECT *
         FROM tbl_episodes_played
         WHERE episode_url = ?
@@ -45,11 +42,6 @@ get_feed_urls_query = """
         SELECT url
         FROM tbl_podcast
     """
-
-
-
-
-
 
 
 all_feed_xmls = []
@@ -75,6 +67,7 @@ def build_tables():
     cur.execute(build_tbl_podcast_query)
     cur.execute(build_tbl_played_episodes)
     conn.commit()
+    return True
 
 
 # def get_stored_urls():
@@ -164,6 +157,44 @@ def get_episodes(podcast_title):
     episodes_data: str = cur.fetchone()[0]
     episodes_info: dict = json.loads(episodes_data)
     return episodes_info
+
+
+def get_episode_history(url):
+    sql = get_episode_history_query
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (url,))
+    history = cur.fetchone()
+    print(history)
+    return(history)
+
+
+def update_tbl_episodes_played(
+        url,
+        last_time
+    ):
+
+    # check if episode is already entered
+    sql = get_episode_history_query
+    conn = get_conn()
+    cur = conn.cursor()
+    cur .execute(sql, (url,))
+    history = cur.fetchone()
+    if history:
+        # update current record.
+        params = (last_time, url)
+        sql = update_play_history_query
+        cur.execute(sql, params)
+        conn.commit()
+    else:
+        # create new record in table
+        params = (
+            url,
+            last_time
+        )
+        sql = add_new_play_history_query
+        cur.execute(sql, params)
+        conn.commit()
 
 
 def update_feeds():

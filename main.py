@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 
 
 import feedparser
@@ -42,11 +43,21 @@ class MainWindow(qtw.QMainWindow):
         ui_file.close()
         logger.info("Inteface loaded")
 
+        # build tables if needed
+        db.build_tables()
+
         # create audio player
         self.player = qtm.QMediaPlayer()
         self.player.setNotifyInterval(1000)
         self.player.positionChanged.connect(self.update_time)
+        self.player.stateChanged.connect(self.update_play_history)
         self.player.setVolume(50)
+
+        # currently loaded media info
+        self.podcast:str = None
+        self.episode_date:str = None
+        self.episode_title:str = None
+        self.episode_url:str = None
 
         # set keyboard commands
         self.key_commands = {
@@ -121,12 +132,20 @@ class MainWindow(qtw.QMainWindow):
         self.lw_episode_list.addItems(ep_dates)
 
     def load_media(self):
-        feed = self.lw_feed_list.selectedItems()[0].text()
+        feed:str = self.lw_feed_list.selectedItems()[0].text()
         episodes: dict = db.get_episodes(feed)
         episode: str = self.lw_episode_list.selectedItems()[0].text().strip()
         url: str = episodes[episode]["url"]
+        # find if episode has been played before, and get position
+        previous_episode_history = db.get_episode_history(url)
+        position = 0
+        if previous_episode_history:
+            position = previous_episode_history[1]
+            print(f"Last position was: {position}")
         media_url = qtc.QUrl(url)
         self.player.setMedia(media_url)
+        self.player.setPosition(position)
+        
 
     def change_volume(self):
         value = self.sldr_volume.value()
@@ -157,9 +176,7 @@ class MainWindow(qtw.QMainWindow):
         print("Delete feed")
 
     def play(self):
-
         self.load_media()
-
         self.player.play()
 
     def pause(self):
@@ -170,7 +187,7 @@ class MainWindow(qtw.QMainWindow):
 
     def stop(self):
         if self.player.state() == qtm.QMediaPlayer.State.PlayingState:
-            self.player.stop()
+            self.player.pause()
 
     def skip_forward(self):
         self.player.setPosition(self.player.position() + 15000)
@@ -215,6 +232,14 @@ class MainWindow(qtw.QMainWindow):
 
         self.update_thread.start()
 
+    def update_play_history(self):
+        p = self.player
+        print(f"Update play history: {p.position()}")
+        print(p.media().canonicalUrl().url())
+        db.update_tbl_episodes_played(
+            p.media().canonicalUrl().url(),
+            p.position()
+        )
 
 
 def test_feed(url):
