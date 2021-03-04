@@ -186,8 +186,9 @@ class MainWindow(qtw.QMainWindow):
             self.player.play()
 
     def stop(self):
+        self.update_play_history()
         if self.player.state() == qtm.QMediaPlayer.State.PlayingState:
-            self.player.pause()
+            self.player.stop()
 
     def skip_forward(self):
         self.player.setPosition(self.player.position() + 15000)
@@ -234,12 +235,17 @@ class MainWindow(qtw.QMainWindow):
 
     def update_play_history(self):
         p = self.player
-        print(f"Update play history: {p.position()}")
-        print(p.media().canonicalUrl().url())
-        db.update_tbl_episodes_played(
-            p.media().canonicalUrl().url(),
-            p.position()
-        )
+        if p.state() == qtm.QMediaPlayer.StoppedState:
+            pass
+        elif p.position() < 1000:
+            pass
+        else:
+            print(f"Update play history: {p.position()}")
+            print(p.media().canonicalUrl().url())
+            db.update_tbl_episodes_played(
+                p.media().canonicalUrl().url(),
+                p.position()
+            )
 
 
 def test_feed(url):
