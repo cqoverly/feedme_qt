@@ -4,6 +4,11 @@ import feedparser
 import json
 from pathlib import Path
 
+import settings
+
+
+DBOX_TOKEN = settings.DBOX_TOKEN
+
 
 build_tbl_podcast_query = """
         CREATE TABLE IF NOT EXISTS tbl_podcast (
