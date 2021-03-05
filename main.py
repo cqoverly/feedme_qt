@@ -182,13 +182,17 @@ class MainWindow(qtw.QMainWindow):
     def pause(self):
         if self.player.state() == qtm.QMediaPlayer.State.PlayingState:
             self.player.pause()
-        else:
+        elif self.player.state() == qtm.QMediaPlayer.State.PausedState:
             self.player.play()
+        else:
+            pass
 
     def stop(self):
+        position = self.player.position()
         self.update_play_history()
         if self.player.state() == qtm.QMediaPlayer.State.PlayingState:
             self.player.stop()
+            self.player.setPosition(position)
 
     def skip_forward(self):
         self.player.setPosition(self.player.position() + 15000)
