@@ -130,3 +130,6 @@ dmypy.json
 
 # SQLite3 databases
 *.db
+
+# settings file
+settings.py
