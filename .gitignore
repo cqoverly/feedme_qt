@@ -131,5 +131,5 @@ dmypy.json
 # SQLite3 databases
 *.db
 
-# settings file
+# project specific files
 settings.py
