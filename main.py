@@ -99,8 +99,8 @@ class MainWindow(qtw.QMainWindow):
 
         # Misc interface items
         self.sldr_volume = self.window.findChild(qtw.QSlider, "sldr_volume")
-        self.sldr_volume.setMinimum(-1)
-        self.sldr_volume.setMaximum(100)
+        self.sldr_volume.setMinimum(-10)
+        self.sldr_volume.setMaximum(110)
         self.sldr_volume.setValue(50)
         self.sldr_volume.sliderMoved.connect(self.change_volume)
 
@@ -149,7 +149,13 @@ class MainWindow(qtw.QMainWindow):
 
     def change_volume(self):
         value = self.sldr_volume.value()
-        self.player.setVolume(value)
+        linear_volume = qtm.QAudio.convertVolume(
+            (value/100),
+            qtm.QAudio.LogarithmicVolumeScale,
+            qtm.QAudio.LinearVolumeScale
+        ) 
+        self.player.setVolume(round(linear_volume * 100))
+        print(self.player.volume())
 
     def add_new_feed(self):
 
