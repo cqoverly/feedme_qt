@@ -39,7 +39,6 @@ class SettingsDialog(qtw.QInputDialog):
         pass
         
 
-
 class MainWindow(qtw.QMainWindow):
     def __init__(self, ui_file, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -50,9 +49,12 @@ class MainWindow(qtw.QMainWindow):
         self.window = loader.load(ui_file)
         ui_file.close()
         logger.info("Inteface loaded")
+        
+        self.window.closeEvent = self.closeEvent
 
         try:
-            sync.get_file('podcasts.db')
+            status = sync.get_file('podcasts.db')
+            logger.info(f"Sync status: {status}")
         except Exception as e:
             logger.error(f"Unable to sync database: {e}")
 
@@ -123,11 +125,11 @@ class MainWindow(qtw.QMainWindow):
         # Load data into interface
         self.load_feed_list()
 
-        # update_feeds needs to be put in it's own thread, or process.
-
         self.grabKeyboard()
         self.window.show()
-        self.update_feeds()
+
+        # Update feeds in separate thread
+        # self.update_feeds()
 
 
     def load_feed_list(self):
@@ -233,6 +235,7 @@ class MainWindow(qtw.QMainWindow):
         key = event.key()
         commands = self.key_commands.keys()
         if key == qtc.Qt.Key_Q:
+            self.closing_handler()
             sys.exit()
         elif key in commands:
             self.key_commands[event.key()]()
@@ -280,6 +283,14 @@ class MainWindow(qtw.QMainWindow):
         )
         print('Settings')
 
+    def closeEvent(self, event: qtg.QCloseEvent) -> None:
+        print("Come on, man!")
+        return super().closeEvent(event)
+
+    def closing_handler(self):
+        logger.info(f"Preparing to close")
+        sync.push_file('podcasts.db')
+
 
 def test_feed(url):
     test_feed = feedparser.parse(url)
@@ -290,10 +301,12 @@ def test_feed(url):
         return True
 
 
+
 if __name__ == "__main__":
     import sys
 
     qtc.QCoreApplication.setAttribute(qtc.Qt.AA_ShareOpenGLContexts)
     app = qtw.QApplication(sys.argv)
     MainWindow = MainWindow("player.ui")
+    app.aboutToQuit.connect(MainWindow.closing_handler)
     sys.exit(app.exec_())
