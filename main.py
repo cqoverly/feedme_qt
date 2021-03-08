@@ -17,7 +17,6 @@ import database as db
 import sync
 
 
-
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
     level=logging.DEBUG, format="%(process)d - %(levelname)s - %(message)s"
@@ -37,7 +36,7 @@ class UpdateWorker(qtc.QObject):
 class SettingsDialog(qtw.QInputDialog):
     def __init__(self, parent=None):
         pass
-        
+
 
 class MainWindow(qtw.QMainWindow):
     def __init__(self, ui_file, parent=None):
@@ -49,11 +48,11 @@ class MainWindow(qtw.QMainWindow):
         self.window = loader.load(ui_file)
         ui_file.close()
         logger.info("Inteface loaded")
-        
+
         self.window.closeEvent = self.closeEvent
 
         try:
-            status = sync.get_file('podcasts.db')
+            status = sync.get_file("podcasts.db")
             logger.info(f"Sync status: {status}")
         except Exception as e:
             logger.error(f"Unable to sync database: {e}")
@@ -69,10 +68,10 @@ class MainWindow(qtw.QMainWindow):
         self.player.setVolume(50)
 
         # currently loaded media info
-        self.podcast:str = None
-        self.episode_date:str = None
-        self.episode_title:str = None
-        self.episode_url:str = None
+        self.podcast: str = None
+        self.episode_date: str = None
+        self.episode_title: str = None
+        self.episode_url: str = None
 
         # set keyboard commands
         self.key_commands = {
@@ -88,7 +87,7 @@ class MainWindow(qtw.QMainWindow):
         # Load Buttons and create connections
         self.btn_add_feed = self.window.findChild(qtw.QPushButton, "btn_add_feed")
         self.btn_add_feed.clicked.connect(self.add_new_feed)
-        self.btn_delete_feed = self.window.findChild(qtw.QPushButton, 'btn_delete_feed')
+        self.btn_delete_feed = self.window.findChild(qtw.QPushButton, "btn_delete_feed")
         self.btn_delete_feed.clicked.connect(self.delete_feed)
         self.btn_play = self.window.findChild(qtw.QPushButton, "btn_play")
         self.btn_play.clicked.connect(self.play)
@@ -131,7 +130,6 @@ class MainWindow(qtw.QMainWindow):
         # Update feeds in separate thread
         # self.update_feeds()
 
-
     def load_feed_list(self):
         logger.info("Loading feed list")
         podcasts = sorted(db.get_podcasts())
@@ -150,7 +148,7 @@ class MainWindow(qtw.QMainWindow):
         self.lw_episode_list.addItems(ep_dates)
 
     def load_media(self):
-        feed:str = self.lw_feed_list.selectedItems()[0].text()
+        feed: str = self.lw_feed_list.selectedItems()[0].text()
         episodes: dict = db.get_episodes(feed)
         episode: str = self.lw_episode_list.selectedItems()[0].text().strip()
         url: str = episodes[episode]["url"]
@@ -163,15 +161,14 @@ class MainWindow(qtw.QMainWindow):
         media_url = qtc.QUrl(url)
         self.player.setMedia(media_url)
         self.player.setPosition(position)
-        
 
     def change_volume(self):
         value = self.sldr_volume.value()
         linear_volume = qtm.QAudio.convertVolume(
-            (value/100),
+            (value / 100),
             qtm.QAudio.LogarithmicVolumeScale,
-            qtm.QAudio.LinearVolumeScale
-        ) 
+            qtm.QAudio.LinearVolumeScale,
+        )
         self.player.setVolume(round(linear_volume * 100))
         print(self.player.volume())
 
@@ -271,17 +268,11 @@ class MainWindow(qtw.QMainWindow):
         else:
             print(f"Update play history: {p.position()}")
             print(p.media().canonicalUrl().url())
-            db.update_tbl_episodes_played(
-                p.media().canonicalUrl().url(),
-                p.position()
-            )
-
+            db.update_tbl_episodes_played(p.media().canonicalUrl().url(), p.position())
 
     def open_settings(self):
-        settings, ok = qtw.QInputDialog(
-
-        )
-        print('Settings')
+        settings, ok = qtw.QInputDialog()
+        print("Settings")
 
     def closeEvent(self, event: qtg.QCloseEvent) -> None:
         print("Come on, man!")
@@ -289,7 +280,7 @@ class MainWindow(qtw.QMainWindow):
 
     def closing_handler(self):
         logger.info(f"Preparing to close")
-        sync.push_file('podcasts.db')
+        sync.push_file("podcasts.db")
 
 
 def test_feed(url):
@@ -299,7 +290,6 @@ def test_feed(url):
         return False
     else:
         return True
-
 
 
 if __name__ == "__main__":
