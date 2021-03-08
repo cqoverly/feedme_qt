@@ -27,7 +27,6 @@ def get_file(file_to_sync):
         ftp.prot_p()
         logger.info(f"ftp connect SUCCESS:  {ftp.welcome}")
         ftp.cwd(remote_dir_path)
-        ftp.dir()
         with open(file_to_sync, 'wb') as localfile:
             status = ftp.retrbinary(f"RETR {file_to_sync}", localfile.write)
             logger.info(f"Attempting to download {file_to_sync}: {status}")
@@ -47,7 +46,6 @@ def push_file(file_to_sync):
         ftp.prot_p()
         logger.info(f"ftp connect SUCCESS:  {ftp.welcome}")
         ftp.cwd(remote_dir_path)
-        ftp.dir()
         with open(file_to_sync, 'rb') as localfile:
             status = ftp.storbinary(f"STOR {file_to_sync}", localfile)
             logger.info(f"Attempting to updload {file_to_sync}: {status}")
