@@ -14,6 +14,8 @@ from PySide2 import Qt
 
 
 import database as db
+import sync
+
 
 
 logger = logging.getLogger("app_logger")
@@ -32,6 +34,12 @@ class UpdateWorker(qtc.QObject):
         self.finished.emit()
 
 
+class SettingsDialog(qtw.QInputDialog):
+    def __init__(self, parent=None):
+        pass
+        
+
+
 class MainWindow(qtw.QMainWindow):
     def __init__(self, ui_file, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -42,6 +50,11 @@ class MainWindow(qtw.QMainWindow):
         self.window = loader.load(ui_file)
         ui_file.close()
         logger.info("Inteface loaded")
+
+        try:
+            sync.get_file('podcasts.db')
+        except Exception as e:
+            logger.error(f"Unable to sync database: {e}")
 
         # build tables if needed
         db.build_tables()
@@ -87,6 +100,9 @@ class MainWindow(qtw.QMainWindow):
         self.btn_pause.clicked.connect(self.pause)
         self.btn_mute = self.window.findChild(qtw.QPushButton, "btn_mute")
         self.btn_mute.clicked.connect(self.toggle_mute)
+        self.btn_settings = self.window.findChild(qtw.QPushButton, "btn_settings")
+        self.btn_settings.clicked.connect(self.open_settings)
+
         # Labels
         self.lbl_time = self.window.findChild(qtw.QLabel, "lbl_time")
 
@@ -162,7 +178,7 @@ class MainWindow(qtw.QMainWindow):
         add_dialog = qtw.QInputDialog()
         self.releaseKeyboard()
         feed_url, ok = add_dialog.getText(
-            self, "Enter Feed URL", "Feed URl:", qtw.QLineEdit.Normal, ""
+            self, "Enter Feed URL", "Feed Url:", qtw.QLineEdit.Normal, ""
         )
 
         try:
@@ -256,6 +272,13 @@ class MainWindow(qtw.QMainWindow):
                 p.media().canonicalUrl().url(),
                 p.position()
             )
+
+
+    def open_settings(self):
+        settings, ok = qtw.QInputDialog(
+
+        )
+        print('Settings')
 
 
 def test_feed(url):
