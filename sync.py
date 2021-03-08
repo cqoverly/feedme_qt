@@ -17,7 +17,8 @@ server = settings.FTP_SERVER
 user = settings.USER
 passwd = base64.b64decode(settings.PASSWD).decode()
 
-remote_dir_path = 'files'
+remote_dir_path = "files"
+
 
 def get_file(file_to_sync):
     ftp = FTP_TLS(server)
@@ -27,10 +28,10 @@ def get_file(file_to_sync):
         ftp.prot_p()
         logger.info(f"ftp connect SUCCESS:  {ftp.welcome}")
         ftp.cwd(remote_dir_path)
-        with open(file_to_sync, 'wb') as localfile:
+        with open(file_to_sync, "wb") as localfile:
             status = ftp.retrbinary(f"RETR {file_to_sync}", localfile.write)
             logger.info(f"Attempting to download {file_to_sync}: {status}")
-        
+
     except Exception as e:
         logger.error(f"ftp connection FAILED: {e}")
     finally:
@@ -46,19 +47,18 @@ def push_file(file_to_sync):
         ftp.prot_p()
         logger.info(f"ftp connect SUCCESS:  {ftp.welcome}")
         ftp.cwd(remote_dir_path)
-        with open(file_to_sync, 'rb') as localfile:
+        with open(file_to_sync, "rb") as localfile:
             status = ftp.storbinary(f"STOR {file_to_sync}", localfile)
             logger.info(f"Attempting to updload {file_to_sync}: {status}")
-        
+
     except Exception as e:
         logger.error(f"ftp connection FAILED: {e}")
     finally:
         ftp.quit()
-        logger.info("ftp connection closed")    
-
+        logger.info("ftp connection closed")
 
 
 if __name__ == "__main__":
 
-    push_file('podcasts.db')
+    push_file("podcasts.db")
     # get_file('podcasts_copy.db')
