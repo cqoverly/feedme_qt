@@ -170,7 +170,6 @@ def get_episode_history(url):
     cur = conn.cursor()
     cur.execute(sql, (url,))
     history = cur.fetchone()
-    print(history)
     return(history)
 
 
