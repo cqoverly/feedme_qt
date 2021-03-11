@@ -2,6 +2,8 @@ from collections import namedtuple
 from typing import Mapping
 import requests
 
+import feedparser
+
 import settings
 
 
@@ -19,13 +21,30 @@ def search(params):
     return reply
 
 
+def parse_search_results(results, search_words):
+    
+    parsed = feedparser.parse(results)
+    print(parsed.entries)
+    for entry in parsed.entries:
+        if entry.title.find(search_words):
+            print()
+            print(entry.title)
+            print(entry.source.href)
+            print(entry.summary)
+
+
 
 
 if __name__ == "__main__":
 
-    params = {"keywords": "linux", "format": "rss"}
+    import pprint as pp
+
+    params = {
+        "keywords": "linux",
+        "format": "rss",
+        "sort": "alpha",
+        "results": 30}
 
     response = search(params)
-    print(response.encoding)
-    print()
-    print(response.content)
+    print(response)
+    parse_search_results(response.content, params["keywords"])
