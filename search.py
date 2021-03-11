@@ -7,12 +7,18 @@ import feedparser
 import settings
 
 
-app_id = settings.APP_ID
+search_app_id = settings.SEARCH_APP_ID
 
-base_url = f"http://api.digitalpodcast.com/v2r/search/?appid={app_id}"
+base_url = f"http://api.digitalpodcast.com/v2r/search/?appid={search_app_id}"
 
 
-def search(params):
+def search(keywords):
+
+    params = {
+        "keywords": keywords,
+        "format": "rss",
+        "sort": "rel",
+        "results": 10}
 
     reply = requests.get(base_url, params)
 
@@ -24,13 +30,11 @@ def search(params):
 def parse_search_results(results, search_words):
     
     parsed = feedparser.parse(results)
-    print(parsed.entries)
     for entry in parsed.entries:
-        if entry.title.find(search_words):
-            print()
-            print(entry.title)
-            print(entry.source.href)
-            print(entry.summary)
+        print()
+        print(entry.title)
+        print(entry.source.href)
+        print(entry.summary)
 
 
 
@@ -39,12 +43,9 @@ if __name__ == "__main__":
 
     import pprint as pp
 
-    params = {
-        "keywords": "linux",
-        "format": "rss",
-        "sort": "alpha",
-        "results": 30}
+    search_words = input("Enter title words to search: ")
 
-    response = search(params)
+
+    response = search(search_words)
     print(response)
-    parse_search_results(response.content, params["keywords"])
+    parse_search_results(response.content, search_words)

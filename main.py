@@ -128,7 +128,7 @@ class MainWindow(qtw.QMainWindow):
         self.window.show()
 
         # Update feeds in separate thread
-        # self.update_feeds()
+        self.update_feeds()
 
     def load_feed_list(self):
         logger.info("Loading feed list")
