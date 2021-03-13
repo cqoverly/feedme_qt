@@ -105,6 +105,7 @@ class MainWindow(qtw.QMainWindow):
         self.btn_settings.clicked.connect(self.open_settings)
 
         # Labels
+        self.lbl_title = self.window.findChild(qtw.QLabel, "lbl_title")
         self.lbl_time = self.window.findChild(qtw.QLabel, "lbl_time")
 
         # ListWidgets
@@ -120,6 +121,8 @@ class MainWindow(qtw.QMainWindow):
         self.sldr_volume.setMaximum(110)
         self.sldr_volume.setValue(50)
         self.sldr_volume.sliderMoved.connect(self.change_volume)
+        self.sldr_playtime = self.window.findChild(qtw.QSlider, "sldr_playtime")   
+
 
         # Load data into interface
         self.load_feed_list()
@@ -128,7 +131,7 @@ class MainWindow(qtw.QMainWindow):
         self.window.show()
 
         # Update feeds in separate thread
-        self.update_feeds()
+        # self.update_feeds() # uncomment to allow functionality
 
     def load_feed_list(self):
         logger.info("Loading feed list")
@@ -150,8 +153,12 @@ class MainWindow(qtw.QMainWindow):
     def load_media(self):
         feed: str = self.lw_feed_list.selectedItems()[0].text()
         episodes: dict = db.get_episodes(feed)
-        episode: str = self.lw_episode_list.selectedItems()[0].text().strip()
-        url: str = episodes[episode]["url"]
+        episode_key: str = self.lw_episode_list.selectedItems()[0].text().strip()
+        episode_data = episodes[episode_key]
+        url: str = episode_data["url"]
+        title = episode_data["title"]
+        print(title)
+
         # find if episode has been played before, and get position
         previous_episode_history = db.get_episode_history(url)
         position = 0
@@ -161,6 +168,9 @@ class MainWindow(qtw.QMainWindow):
         media_url = qtc.QUrl(url)
         self.player.setMedia(media_url)
         self.player.setPosition(position)
+
+        # set parameters and initial position for sldr_playime
+        self.lbl_title.setText(f"Title: {title}")
 
     def change_volume(self):
         value = self.sldr_volume.value()
@@ -243,10 +253,16 @@ class MainWindow(qtw.QMainWindow):
         duration = self.player.duration() / 1000
         d_min = str(round(duration // 60)).zfill(2)
         d_sec = str(round(duration % 60)).zfill(2)
-        current_time = self.player.position() / 1000
+        player_position = self.player.position()
+        current_time = player_position / 1000
         curr_min = str(round(current_time // 60)).zfill(2)
         curr_sec = str(round(current_time % 60)).zfill(2)
         self.lbl_time.setText(f"Current time: {curr_min}:{curr_sec} / {d_min}:{d_sec}")
+
+        self.sldr_playtime.setMinimum(0)
+        self.sldr_playtime.setMaximum(self.player.duration())
+        self.sldr_playtime.setValue(player_position)
+
 
     def update_feeds(self):
         self.update_thread = qtc.QThread()
