@@ -7,15 +7,27 @@ from ssl import SSLContext
 from typing import Type
 
 import settings
+import database as db
 
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
     level=logging.DEBUG, format="%(process)d - %(levelname)s - %(message)s"
 )
 
-server = settings.FTP_SERVER
-user = settings.USER
-passwd = base64.b64decode(settings.PASSWD).decode()
+
+user_info = db.get_user_settings()
+try:
+    settings = user_info
+    print(settings)
+    user, passwd, server = settings
+    passwd = base64.b64decode(passwd).decode()
+except TypeError as e:
+    user, passwd, server = (None, None, None)
+
+
+# server = settings.FTP_SERVER
+# user = settings.USER
+# passwd = base64.b64decode(settings.PASSWD).decode()
 
 remote_dir_path = "files"
 
