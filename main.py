@@ -34,9 +34,15 @@ class UpdateWorker(qtc.QObject):
         self.finished.emit()
 
 
-class SettingsDialog(qtw.QInputDialog):
+class SettingsDialog(qtw.QDialogButtonBox):
     def __init__(self, parent=None):
-        pass
+        super(SettingsDialog, self).__init__(parent)
+        ui_file = qtc.QFile("settings_dialog.ui")
+        ui_file.open(qtc.QFile.ReadOnly)
+
+        loader = qtu.QUiLoader()
+        self.window = loader.load(ui_file)
+        ui_file.close()
 
 
 class MainWindow(qtw.QMainWindow):
@@ -319,18 +325,8 @@ class MainWindow(qtw.QMainWindow):
         sync.push_file("podcasts.db")
 
 
-class SettingsDialog(qtw.QDialogButtonBox):
-    def __init__(self, parent=None):
-        super(SettingsDialog, self).__init__(parent)
-        ui_file = qtc.QFile("settings_dialog.ui")
-        ui_file.open(qtc.QFile.ReadOnly)
-
-        loader = qtu.QUiLoader()
-        self.window = loader.load(ui_file)
-        ui_file.close()
         
 
-        # self.show()
     
         
 
