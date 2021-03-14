@@ -1,3 +1,4 @@
+import base64
 import logging
 import os
 import time
@@ -287,9 +288,28 @@ class MainWindow(qtw.QMainWindow):
             db.update_tbl_episodes_played(p.media().canonicalUrl().url(), p.position())
 
     def open_settings(self):
-        settings, ok = qtw.QInputDialog()
-        print("Settings")
+        self.settings_dialog = SettingsDialog()
+        self.releaseKeyboard()
+        self.settings_dialog.window.buttonBox.accepted.connect(self.save_settings)
+        self.settings_dialog.window.show()
+        
 
+    def save_settings(self):
+        dialog = self.settings_dialog.window
+        user = dialog.le_username.text()
+        pwd = dialog.le_password.text()
+        server = dialog.le_server.text()
+
+        if not user or not pwd or not server:
+            print("Enter all fields")
+        else:
+            enc_pwd = base64.b64encode(pwd.encode("utf-8")).decode()
+            print(enc_pwd)
+            
+
+        self.grabKeyboard()
+
+    
     def closeEvent(self, event: qtg.QCloseEvent) -> None:
         print("Come on, man!")
         return super().closeEvent(event)
@@ -298,6 +318,21 @@ class MainWindow(qtw.QMainWindow):
         logger.info(f"Preparing to close")
         sync.push_file("podcasts.db")
 
+
+class SettingsDialog(qtw.QDialogButtonBox):
+    def __init__(self, parent=None):
+        super(SettingsDialog, self).__init__(parent)
+        ui_file = qtc.QFile("settings_dialog.ui")
+        ui_file.open(qtc.QFile.ReadOnly)
+
+        loader = qtu.QUiLoader()
+        self.window = loader.load(ui_file)
+        ui_file.close()
+        
+
+        # self.show()
+    
+        
 
 def test_feed(url):
     test_feed = feedparser.parse(url)
