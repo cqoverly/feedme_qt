@@ -75,6 +75,14 @@ insert_new_user_settings_query = """
         VALUES (?,?,?)
 """
 
+get_user_settings_query = """
+        SELECT 
+            username,
+            password,
+            server
+        FROM tbl_user_settings;
+"""
+
 all_feed_xmls = []
 feeds_in_db = []
 
@@ -260,6 +268,14 @@ def update_user_settings(username, password, server):
         conn.commit()
         conn.close()
     
+
+def get_user_settings():
+    sql = get_user_settings_query
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql)
+    return cur.fetchone()
+
 
 
 if __name__ == "__main__":
