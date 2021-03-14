@@ -2,12 +2,16 @@ import sqlite3
 import threading
 import feedparser
 import json
+import logging
 from pathlib import Path
 
 import settings
 
 
-DBOX_TOKEN = settings.DBOX_TOKEN
+logger = logging.getLogger("app_logger")
+logging.basicConfig(
+    level=logging.DEBUG, format="%(process)d - %(levelname)s - %(message)s"
+)
 
 
 build_tbl_podcast_query = """
@@ -25,6 +29,15 @@ build_tbl_played_episodes = """
             last_time INTEGER NOT NULL
         )
     """
+
+build_tbl_user_settings = """
+        CREATE TABLE IF NOT EXISTS tbl_user_settings (
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            password TEXT NOT NULL,
+            server TEXT
+        )
+"""
 
 add_new_play_history_query = """
         INSERT INTO tbl_episodes_played
@@ -48,6 +61,19 @@ get_feed_urls_query = """
         FROM tbl_podcast
     """
 
+update_user_settings_query = """
+        UPDATE tbl_user_settings 
+        SET
+            username = ?
+            password = ?
+            server = ?
+        WHERE user_id = ?
+"""
+
+insert_new_user_settings_query = """
+        INSERT INTO tbl_user_settings (username, password, server)
+        VALUES (?,?,?)
+"""
 
 all_feed_xmls = []
 feeds_in_db = []
@@ -71,6 +97,7 @@ def build_tables():
     cur = conn.cursor()
     cur.execute(build_tbl_podcast_query)
     cur.execute(build_tbl_played_episodes)
+    cur.execute(build_tbl_user_settings)
     conn.commit()
     return True
 
@@ -214,6 +241,25 @@ def update_feeds():
         thread.join()
     # for xml in all_feed_xmls:
     #     parse_xmls_to_database(xml, feed_url)
+
+
+def update_user_settings(username, password, server):
+    sql = update_user_settings_query
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("SELECT user_id FROM tbl_user_settings;")
+    try:
+        user_id = cur.fetchone()[0]
+        params = (username, password, server, user_id)
+        cur.execute(sql, params)
+    except TypeError as e:
+        sql = insert_new_user_settings_query
+        params = (username, password, server)
+        cur.execute(sql, params)
+    finally:
+        conn.commit()
+        conn.close()
+    
 
 
 if __name__ == "__main__":
