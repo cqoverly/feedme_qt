@@ -15,19 +15,19 @@ logging.basicConfig(
 )
 
 
-user_info = db.get_user_settings()
-try:
-    settings = user_info
-    print(settings)
-    user, passwd, server = settings
-    passwd = base64.b64decode(passwd).decode()
-except TypeError as e:
-    user, passwd, server = (None, None, None)
+# user_info = db.get_user_settings()
+# try:
+#     settings = user_info
+#     print(settings)
+#     user, passwd, server = settings
+#     passwd = base64.b64decode(passwd).decode()
+# except TypeError as e:
+#     user, passwd, server = (None, None, None)
 
 
-# server = settings.FTP_SERVER
-# user = settings.USER
-# passwd = base64.b64decode(settings.PASSWD).decode()
+server = settings.FTP_SERVER
+user = settings.USER
+passwd = base64.b64decode(settings.PASSWD).decode()
 
 remote_dir_path = "files"
 
