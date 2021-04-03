@@ -128,8 +128,8 @@ class MainWindow(qtw.QMainWindow):
         self.sldr_volume.setMaximum(110)
         self.sldr_volume.setValue(50)
         self.sldr_volume.sliderMoved.connect(self.change_volume)
-        self.sldr_playtime = self.window.findChild(qtw.QSlider, "sldr_playtime")   
-
+        self.sldr_playtime = self.window.findChild(qtw.QSlider, "sldr_playtime")
+        self.sldr_playtime.sliderMoved.connect(self.change_time)
 
         # Load data into interface
         self.load_feed_list()
@@ -138,7 +138,7 @@ class MainWindow(qtw.QMainWindow):
         self.window.show()
 
         # Update feeds in separate thread
-        self.update_feeds() # uncomment to allow functionality
+        self.update_feeds()  # uncomment to allow functionality
 
     def load_feed_list(self):
         logger.info("Loading feed list")
@@ -188,6 +188,10 @@ class MainWindow(qtw.QMainWindow):
         )
         self.player.setVolume(round(linear_volume * 100))
         print(self.player.volume())
+
+    def change_time(self):
+        new_time = self.sldr_playtime.value()
+        self.player.setPosition(new_time)
 
     def add_new_feed(self):
 
@@ -270,7 +274,6 @@ class MainWindow(qtw.QMainWindow):
         self.sldr_playtime.setMaximum(self.player.duration())
         self.sldr_playtime.setValue(player_position)
 
-
     def update_feeds(self):
         self.update_thread = qtc.QThread()
         self.update_worker = UpdateWorker()
@@ -298,7 +301,6 @@ class MainWindow(qtw.QMainWindow):
         self.releaseKeyboard()
         self.settings_dialog.window.buttonBox.accepted.connect(self.save_settings)
         self.settings_dialog.window.show()
-        
 
     def save_settings(self):
         dialog = self.settings_dialog.window
@@ -311,11 +313,9 @@ class MainWindow(qtw.QMainWindow):
         else:
             enc_pwd = base64.b64encode(pwd.encode("utf-8")).decode()
             print(enc_pwd)
-            
 
         self.grabKeyboard()
 
-    
     def closeEvent(self, event: qtg.QCloseEvent) -> None:
         print("Come on, man!")
         return super().closeEvent(event)
@@ -324,11 +324,6 @@ class MainWindow(qtw.QMainWindow):
         logger.info(f"Preparing to close")
         sync.push_file("podcasts.db")
 
-
-        
-
-    
-        
 
 def test_feed(url):
     test_feed = feedparser.parse(url)
