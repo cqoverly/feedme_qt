@@ -133,3 +133,6 @@ dmypy.json
 
 # project specific files
 settings.py
+
+# ides
+.vscode/
